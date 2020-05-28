@@ -1,11 +1,11 @@
 package frsf.isi.died.guia08.problema01.modelo;
 
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.chrono.ChronoLocalDate;
-
 import frsf.isi.died.guia08.problema01.ExcepcionPersonalizada.ExcepcionPersonalizada;
 
 public class Tarea {
@@ -29,12 +29,12 @@ public class Tarea {
 	}
 	
 	
-	public Tarea(Integer id, String descripcion, Integer duracionEstimada, Empleado empleadoAsignado) {
+	public Tarea(Integer id, String descripcion, Integer duracionEstimada) {
 		super();
 		this.id = id;
 		this.descripcion = descripcion;
 		this.duracionEstimada = duracionEstimada;
-		this.empleadoAsignado = empleadoAsignado;
+		this.empleadoAsignado = null;
 		this.fechaInicio = null;
 		this.fechaFin = null;
 		this.facturada = false;
@@ -91,14 +91,12 @@ public class Tarea {
 		}
 	}
 	
-	public void asignarEmpleado(Empleado e) throws ExcepcionPersonalizada {
-		// si la tarea ya tiene un empleado asignado
-		// y tiene fecha de finalizado debe lanzar una excepcion
+	public void asignarEmpleado(Empleado e) throws ExcepcionPersonalizada{
 		if(this.empleadoAsignado == null && this.fechaFin != null) {
 			this.empleadoAsignado = e;
 		}
 		else {
-			throw new ExcepcionPersonalizada("No se puede asignar empleado");
+			throw new ExcepcionPersonalizada("No se puede asignar el empleado.");
 		}
 	}
 	

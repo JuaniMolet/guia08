@@ -1,42 +1,72 @@
 package frsf.isi.died.guia08.problema01;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import frsf.isi.died.guia08.problema01.ExcepcionPersonalizada.ExcepcionPersonalizada;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
+import frsf.isi.died.guia08.problema01.modelo.Empleado.Tipo;
 import frsf.isi.died.guia08.problema01.modelo.Tarea;
 
 public class AppRRHH {
 
 	private List<Empleado> empleados;
 	
+	
 	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costoHora) {
-		// crear un empleado
-		// agregarlo a la lista
+		Empleado a = new Empleado(cuil, nombre, Tipo.CONTRATADO, costoHora);
+		empleados.add(a);
 	}
 	
 	public void agregarEmpleadoEfectivo(Integer cuil,String nombre,Double costoHora) {
-		// crear un empleado
-		// agregarlo a la lista		
+		Empleado a = new Empleado(cuil, nombre, Tipo.EFECTIVO, costoHora);
+		empleados.add(a);
 	}
 	
-	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) {
-		// crear un empleado
-		// con el método buscarEmpleado() de esta clase
-		// agregarlo a la lista		
+	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada){
+		Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(b.isPresent()) {
+			Tarea t = new Tarea(idTarea, descripcion, duracionEstimada);
+			try {
+				t.asignarEmpleado(b.get());
+			} catch (ExcepcionPersonalizada e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		else {
+			System.out.println("No existe dicho empleado");
+		}	
 	}
 	
 	public void empezarTarea(Integer cuil,Integer idTarea) {
-		// busca el empleado por cuil en la lista de empleados
-		// con el método buscarEmpleado() actual de esta clase
-		// e invoca al método comenzar tarea
+		Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(b.isPresent()) {
+			try {
+				b.get().comenzar(idTarea);
+			} catch (ExcepcionPersonalizada e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		else {
+			System.out.println("No existe dicho empleado");
+		}
 	}
 	
-	public void terminarTarea(Integer cuil,Integer idTarea) {
-		// crear un empleado
-		// agregarlo a la lista		
+	public void terminarTarea(Integer cuil,Integer idTarea) {		
+		Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+		if(b.isPresent()) {
+			try {
+				b.get().finalizar(idTarea);
+			} catch (ExcepcionPersonalizada e1) {
+				System.out.println(e1.getMessage());
+			}
+		}
+		else {
+			System.out.println("No existe dicho empleado");
+		}
 	}
 
 	public void cargarEmpleadosContratadosCSV(String nombreArchivo) {

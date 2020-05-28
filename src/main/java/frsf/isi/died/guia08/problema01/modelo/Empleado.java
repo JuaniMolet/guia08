@@ -94,9 +94,6 @@ public class Empleado {
 	}
 	
 	public Double salario() {
-		// cargar todas las tareas no facturadas
-		// calcular el costo
-		// marcarlas como facturadas.
 		Optional<Double> salario = tareasAsignadas.stream()
 				.filter(t -> t.getFacturada() == false)
 				.map(t -> t.facturar())
@@ -105,7 +102,6 @@ public class Empleado {
 
 		return salario.orElse(0.0);
 	}
-	
 	/**
 	 * Si la tarea ya fue terminada nos indica cuaal es el monto según el algoritmo de calculoPagoPorTarea
 	 * Si la tarea no fue terminada simplemente calcula el costo en base a lo estimado.
@@ -125,7 +121,7 @@ public class Empleado {
 	}
 		
 	//ASIGNA UNA TAREA A UN EMPLEADO.
-	public Boolean asignarTarea(Tarea t) throws ExcepcionPersonalizada {
+	public Boolean asignarTarea(Tarea t) throws Exception {
 		switch(this.getTipo()) {
 			case CONTRATADO:
 				if(this.cantidadTareasPendientes() > 5) {
@@ -147,9 +143,6 @@ public class Empleado {
 	}
 	
 	public void comenzar(Integer idTarea) throws ExcepcionPersonalizada{
-		// busca la tarea en la lista de tareas asignadas 
-		// si la tarea no existe lanza una excepción
-		// si la tarea existe indica como fecha de inicio la fecha y hora actual
 		boolean bandera = false;
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
@@ -164,9 +157,6 @@ public class Empleado {
 	}
 	
 	public void finalizar(Integer idTarea) throws ExcepcionPersonalizada {
-		// busca la tarea en la lista de tareas asignadas 
-		// si la tarea no existe lanza una excepción
-		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
 		boolean bandera = false;
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
@@ -180,9 +170,6 @@ public class Empleado {
 	}
 
 	public void comenzar(Integer idTarea,String fecha) throws ExcepcionPersonalizada {
-		// busca la tarea en la lista de tareas asignadas 
-		// si la tarea no existe lanza una excepción
-		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
 		boolean bandera = false;
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
@@ -196,9 +183,6 @@ public class Empleado {
 	}
 	
 	public void finalizar(Integer idTarea,String fecha) throws ExcepcionPersonalizada {
-		// busca la tarea en la lista de tareas asignadas 
-		// si la tarea no existe lanza una excepción
-		// si la tarea existe indica como fecha de finalizacion la fecha y hora actual
 		boolean bandera = false;
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
@@ -212,7 +196,6 @@ public class Empleado {
 	}
 		
 	//GETTERS Y SETTERS.
-
 	public Integer getCuil() {
 		return cuil;
 	}
