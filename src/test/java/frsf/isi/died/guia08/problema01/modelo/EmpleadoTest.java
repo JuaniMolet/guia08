@@ -42,7 +42,6 @@ public class EmpleadoTest {
 		t1.setFechaInicio(LocalDateTime.now());
 		t1.setFechaFin(LocalDateTime.of(dia1, LocalTime.now()));	
 		
-			
 		//Tarea 2
 		t2 = new Tarea(2, "Tarea2", 4);
 		t2.setFechaInicio(LocalDateTime.now());

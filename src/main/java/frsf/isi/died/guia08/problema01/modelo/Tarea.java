@@ -100,11 +100,16 @@ public class Tarea {
 	}
 	
 	public void asignarEmpleado(Empleado e) throws ExcepcionPersonalizada{
-		if(this.empleadoAsignado == null && this.fechaFin != null) {
-			this.empleadoAsignado = e;
+		if(this.empleadoAsignado == null) {
+			if(this.fechaFin != null) {
+				this.empleadoAsignado = e;
+			}
+			else {
+				throw new ExcepcionPersonalizada("Esta tarea ya ha finalizado");
+			}
 		}
 		else {
-			throw new ExcepcionPersonalizada("No se puede asignar el empleado.");
+			throw new ExcepcionPersonalizada("Esta tarea ya tiene un empleado asignado");
 		}
 	}
 	
