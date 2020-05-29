@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.chrono.ChronoLocalDate;
+import java.util.Optional;
+
 import frsf.isi.died.guia08.problema01.ExcepcionPersonalizada.ExcepcionPersonalizada;
 
 public class Tarea {
@@ -142,11 +144,20 @@ public class Tarea {
 	public LocalDateTime getFechaInicio() {
 		return fechaInicio;
 	}
-
+	
 	public void setFechaInicio(LocalDateTime fechaInicio) {
 		this.fechaInicio = fechaInicio;
 	}
+	
+	public boolean tareaEmpezada() {
+		if(this.getFechaInicio() != null) {
+			return true;
+		}
+		else return false;
+	}
+	
 
+	
 	public LocalDateTime getFechaFin() {
 		return fechaFin;
 	}

@@ -122,7 +122,7 @@ public class Empleado {
 	}
 		
 	//ASIGNA UNA TAREA A UN EMPLEADO.
-	public Boolean asignarTarea(Tarea t) throws Exception {
+	public Boolean asignarTarea(Tarea t) throws ExcepcionPersonalizada {
 		switch(this.getTipo()) {
 			case CONTRATADO:
 				if(this.cantidadTareasPendientes() > 5) {

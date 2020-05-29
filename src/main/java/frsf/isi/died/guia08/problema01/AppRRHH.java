@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class AppRRHH {
 		}
 	}
 	
-	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws ExcepcionPersonalizada{
+	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws Exception{
 		//Primero debo buscar si la tarea que se quiere asignar existe previamente.
 		Optional<Tarea> tareaExistente = this.buscarTarea(t -> t.getId().equals(idTarea));
 		if(tareaExistente.isPresent()) {
@@ -76,7 +77,10 @@ public class AppRRHH {
 			Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
 			if(b.isPresent()) {
 				Tarea t = new Tarea(idTarea, descripcion, duracionEstimada);
+				t.setFechaInicio(LocalDateTime.now());
+				t.setFechaFin(LocalDateTime.of(2020, 06, 04, 8, 00));
 				try {
+					(b.get()).asignarTarea(t);
 					t.asignarEmpleado(b.get());
 				} catch (ExcepcionPersonalizada e1) {
 					e1.getMessage();
@@ -150,7 +154,7 @@ public class AppRRHH {
 		}
 	}
 
-	public void cargarTareasCSV(String nombreArchivo) throws FileNotFoundException, IOException, ExcepcionPersonalizada{
+	public void cargarTareasCSV(String nombreArchivo) throws NumberFormatException, Exception{
 		try(Reader lector = new FileReader(nombreArchivo)){
 			try(BufferedReader entrada = new BufferedReader(lector)){
 				String linea = null;
@@ -201,5 +205,13 @@ public class AppRRHH {
 		return this.empleados.stream()				
 				.mapToDouble(e -> e.salario())
 				.sum();
+	}
+	
+	public void setEmpleados(List<Empleado> lista) {
+		this.empleados = lista;
+	}
+	
+	public List<Empleado> getEmpleados() {
+		return empleados;
 	}
 }
