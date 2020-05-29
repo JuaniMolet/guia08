@@ -91,6 +91,14 @@ public class Tarea {
 		}
 	}
 	
+	//RETORNA TRUE SI LA TAREA TERMINO.
+	public boolean tareaTerminada() {
+		if(this.tareaPendiente() == false) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void asignarEmpleado(Empleado e) throws ExcepcionPersonalizada{
 		if(this.empleadoAsignado == null && this.fechaFin != null) {
 			this.empleadoAsignado = e;
@@ -99,6 +107,7 @@ public class Tarea {
 			throw new ExcepcionPersonalizada("No se puede asignar el empleado.");
 		}
 	}
+	
 	
 	//GETTERS Y SETTERS.
 	public Integer getId() {
@@ -158,5 +167,15 @@ public class Tarea {
 		System.out.println(this.empleadoAsignado.getNombre());
 	}
 	
+	@Override
+	public String toString() {
+		return this.id+";"+this.descripcion+";"+this.duracionEstimada;
+	}
+
+
+	public String asCsv() {
+		//ID; DESCRIPCION; DURACIONESTIMADA; CUILEMPLEADOASIGNAR 
+		return this.id + ";\"" + this.descripcion + ";\"" + this.duracionEstimada + ";\"" + this.empleadoAsignado.getCuil();
+	}
 	
 }

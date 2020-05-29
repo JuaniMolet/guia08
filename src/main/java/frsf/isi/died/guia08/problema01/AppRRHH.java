@@ -1,10 +1,21 @@
 package frsf.isi.died.guia08.problema01;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import frsf.isi.died.guia08.problema01.ExcepcionPersonalizada.ExcepcionPersonalizada;
 import frsf.isi.died.guia08.problema01.modelo.Empleado;
@@ -16,29 +27,65 @@ public class AppRRHH {
 	private List<Empleado> empleados;
 	
 	
-	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costoHora) {
+	//CONSTRUCTORES
+	public AppRRHH() {
+		empleados = new ArrayList<Empleado>();
+	}
+	
+	public AppRRHH(List<Empleado> lista) {
+		empleados = lista;
+	}
+	
+	
+	
+	//METODOS.
+	
+	public void agregarEmpleadoContratado(Integer cuil,String nombre,Double costoHora) throws ExcepcionPersonalizada {
 		Empleado a = new Empleado(cuil, nombre, Tipo.CONTRATADO, costoHora);
-		empleados.add(a);
-	}
-	
-	public void agregarEmpleadoEfectivo(Integer cuil,String nombre,Double costoHora) {
-		Empleado a = new Empleado(cuil, nombre, Tipo.EFECTIVO, costoHora);
-		empleados.add(a);
-	}
-	
-	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada){
-		Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
-		if(b.isPresent()) {
-			Tarea t = new Tarea(idTarea, descripcion, duracionEstimada);
-			try {
-				t.asignarEmpleado(b.get());
-			} catch (ExcepcionPersonalizada e1) {
-				System.out.println(e1.getMessage());
-			}
+		
+		//Debo verificar si el empleado existe previamente.
+		if(this.buscarEmpleado(emp -> emp.getCuil().equals(cuil)).isPresent()) {
+			throw new ExcepcionPersonalizada("El empleado ya existe en la lista de empleados.");
 		}
 		else {
-			System.out.println("No existe dicho empleado");
-		}	
+			empleados.add(a);
+		}
+	}
+	
+	public void agregarEmpleadoEfectivo(Integer cuil,String nombre,Double costoHora) throws ExcepcionPersonalizada {
+		Empleado a = new Empleado(cuil, nombre, Tipo.EFECTIVO, costoHora);
+		
+		//Debo verificar si el empleado existe previamente.
+		if(this.buscarEmpleado(emp -> emp.getCuil().equals(cuil)).isPresent()) {
+			throw new ExcepcionPersonalizada("El empleado ya existe en la lista de empleados.");
+		}
+		else {
+			
+			empleados.add(a);
+		}
+	}
+	
+	public void asignarTarea(Integer cuil,Integer idTarea,String descripcion,Integer duracionEstimada) throws ExcepcionPersonalizada{
+		//Primero debo buscar si la tarea que se quiere asignar existe previamente.
+		Optional<Tarea> tareaExistente = this.buscarTarea(t -> t.getId().equals(idTarea));
+		if(tareaExistente.isPresent()) {
+			throw new ExcepcionPersonalizada("Ya existe una tarea con ese id");
+		}
+		else {
+			//Si no existe una tarea registrada previamente con ese id, busco el empleado.
+			Optional<Empleado> b = this.buscarEmpleado(e -> e.getCuil().equals(cuil));
+			if(b.isPresent()) {
+				Tarea t = new Tarea(idTarea, descripcion, duracionEstimada);
+				try {
+					t.asignarEmpleado(b.get());
+				} catch (ExcepcionPersonalizada e1) {
+					e1.getMessage();
+				}
+			}
+			else {
+				System.out.println("No existe dicho empleado");
+			}	
+		}
 	}
 	
 	public void empezarTarea(Integer cuil,Integer idTarea) {
@@ -69,33 +116,87 @@ public class AppRRHH {
 		}
 	}
 
-	public void cargarEmpleadosContratadosCSV(String nombreArchivo) {
-		// leer datos del archivo
-		// por cada fila invocar a agregarEmpleadoContratado
+	public void cargarEmpleadosContratadosCSV(String nombreArchivo) throws FileNotFoundException, IOException, ExcepcionPersonalizada{
+		try(Reader lector = new FileReader(nombreArchivo)){
+			try(BufferedReader entrada = new BufferedReader(lector)){
+				String linea = null;
+				while((linea = entrada.readLine())!=null) {
+					String[] fila = linea.split(";");
+					try{
+						this.agregarEmpleadoContratado(Integer.valueOf(fila[0]), fila[1], Double.valueOf(fila[2]));
+					}
+					catch(ExcepcionPersonalizada e) {
+						throw new ExcepcionPersonalizada("Error al leer el archivo");
+					}
+				}
+			}
+		}
 	}
 
-	public void cargarEmpleadosEfectivosCSV(String nombreArchivo) {
-		// leer datos del archivo
-		// por cada fila invocar a agregarEmpleadoContratado		
+	public void cargarEmpleadosEfectivosCSV(String nombreArchivo) throws FileNotFoundException, IOException, ExcepcionPersonalizada {
+		try(Reader lector = new FileReader(nombreArchivo)){
+			try(BufferedReader entrada = new BufferedReader(lector)){
+				String linea = null;
+				while((linea = entrada.readLine())!=null) {
+					String[] fila = linea.split(";");
+					try{
+						this.agregarEmpleadoEfectivo(Integer.valueOf(fila[0]), fila[1], Double.valueOf(fila[2]));
+					}
+					catch(ExcepcionPersonalizada e) {
+						throw new ExcepcionPersonalizada("Error al leer el archivo");
+					}
+				}
+			}
+		}
 	}
 
-	public void cargarTareasCSV(String nombreArchivo) {
-		// leer datos del archivo
-		// cada fila del archivo tendrá:
-		// cuil del empleado asignado, numero de la taera, descripcion y duración estimada en horas.
+	public void cargarTareasCSV(String nombreArchivo) throws FileNotFoundException, IOException, ExcepcionPersonalizada{
+		try(Reader lector = new FileReader(nombreArchivo)){
+			try(BufferedReader entrada = new BufferedReader(lector)){
+				String linea = null;
+				while((linea = entrada.readLine())!=null) {
+					String[] fila = linea.split(";");
+					try{
+						this.asignarTarea(Integer.valueOf(fila[0]), Integer.valueOf(fila[1]), fila[2], Integer.valueOf(fila[3]));
+					}
+					catch(ExcepcionPersonalizada e) {
+						throw new ExcepcionPersonalizada("Error al leer el archivo");
+					}
+				}
+			}
+		}
 	}
 	
-	private void guardarTareasTerminadasCSV() {
-		// guarda una lista con los datos de la tarea que fueron terminadas
-		// y todavía no fueron facturadas
-		// y el nombre y cuil del empleado que la finalizó en formato CSV 
+	private void guardarTareasTerminadasCSV() throws IOException {	
+		//Lista de tareas terminadas y no facturadas.
+		List<Tarea> tareas = this.empleados.stream()
+				.map(e -> e.getTareasAsignadas())
+				.flatMap(tareasAsignadas -> tareasAsignadas.stream())
+				.filter(t -> t.tareaTerminada() && t.getFacturada() == false)
+				.collect(Collectors.toList());		
+		//Escribir sobre el archivo.
+		try(Writer fileWriter= new FileWriter("tareasFinalizadas.csv",true)) {
+			try(BufferedWriter out = new BufferedWriter(fileWriter)){
+				for(Tarea unaTarea: tareas) {
+					out.write(unaTarea.asCsv()+ System.getProperty("line.separator"));
+				}
+			}
+		}
 	}
 	
 	private Optional<Empleado> buscarEmpleado(Predicate<Empleado> p){
 		return this.empleados.stream().filter(p).findFirst();
 	}
+	
+	private Optional<Tarea> buscarTarea(Predicate<Tarea> p){
+		return this.empleados.stream()
+				.map(e -> e.getTareasAsignadas())
+				.flatMap(tareasAsignadas -> tareasAsignadas.stream())
+				.filter(p)
+				.findFirst();
+	}
 
-	public Double facturar() {
+	public Double facturar() throws IOException {
 		this.guardarTareasTerminadasCSV();
 		return this.empleados.stream()				
 				.mapToDouble(e -> e.salario())
