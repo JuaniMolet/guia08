@@ -102,12 +102,13 @@ public class Empleado {
 
 		return salario.orElse(0.0);
 	}
+	
 	/**
 	 * Si la tarea ya fue terminada nos indica cuaal es el monto según el algoritmo de calculoPagoPorTarea
 	 * Si la tarea no fue terminada simplemente calcula el costo en base a lo estimado.
 	 */
 	public Double costoTarea(Tarea t) {
-		if(t.getFechaFin() != null) {
+		if(t.tareaTerminada() == false) {
 			return calculoPagoPorTarea.apply(t);
 		}
 		else {
@@ -144,13 +145,15 @@ public class Empleado {
 	
 	public void comenzar(Integer idTarea) throws ExcepcionPersonalizada{
 		boolean bandera = false;
+		
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
 				unaTarea.setFechaInicio(LocalDateTime.now());
 				bandera = true;
 			}
 		}
-		if(bandera = false) {
+		
+		if(bandera == false) {
 			throw new ExcepcionPersonalizada("No existe una tarea para comenzar con ese id");
 		}
 		
@@ -177,12 +180,12 @@ public class Empleado {
 				bandera = true;
 			}
 		}
-		if(bandera = false) {
+		if(bandera == false) {
 			throw new ExcepcionPersonalizada("No existe una tarea para comenzar con ese id");
 		}
 	}
 	
-	public void finalizar(Integer idTarea,String fecha) throws ExcepcionPersonalizada {
+	public void finalizar(Integer idTarea, String fecha) throws ExcepcionPersonalizada {
 		boolean bandera = false;
 		for(Tarea unaTarea : this.tareasAsignadas) {
 			if(unaTarea.getId() == idTarea) {
@@ -252,4 +255,8 @@ public class Empleado {
 		this.puedeAsignarTarea = puedeAsignarTarea;
 	}
 	
+	@Override
+	public String toString() {
+		return this.cuil+";"+this.nombre+";"+this.costoHora;
+	}
 }
